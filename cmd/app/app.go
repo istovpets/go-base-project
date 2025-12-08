@@ -1,6 +1,7 @@
 package app
 
 import (
+	"base-project/internal/api/rest"
 	"base-project/internal/config"
 	"base-project/internal/controller/repository/postgres"
 	"base-project/internal/pkg/logger"
@@ -12,6 +13,7 @@ type App struct {
 	config     *config.Config
 	log        *slog.Logger
 	repository *postgres.Database
+	rest       *rest.Rest
 }
 
 // Getters
@@ -48,6 +50,14 @@ func (a *App) Repository() *postgres.Database {
 	return a.repository
 }
 
+func (a *App) Rest() *rest.Rest {
+	if a.rest == nil {
+		a.rest = rest.New()
+	}
+
+	return a.rest
+}
+
 // Start/Stop
 
 func (a *App) Stop() {
@@ -56,6 +66,7 @@ func (a *App) Stop() {
 
 func (a *App) Run() {
 	a.Log().Debug("application started")
+	a.Rest().Run()
 }
 
 func New() *App {
