@@ -9,8 +9,8 @@ type Rest struct {
 }
 
 func New() *Rest {
-	rest := &Rest{}
-	rest.srv = fuego.NewServer(
+	r := &Rest{}
+	r.srv = fuego.NewServer(
 		fuego.WithEngineOptions(
 			fuego.WithOpenAPIConfig(
 				fuego.OpenAPIConfig{
@@ -21,10 +21,13 @@ func New() *Rest {
 		),
 	)
 
-	fuego.Get(rest.srv, "/ping", pingHandler)
+	// Register handlers
+	r.addHandlers()
 
-	return rest
+	return r
 }
+
+// Start/Stop
 
 func (r *Rest) Start() {
 
