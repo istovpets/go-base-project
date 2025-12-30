@@ -79,7 +79,7 @@
 	"paths": {
 		"/ping": {
 			"get": {
-				"description": "#### Controller: \n\n`base-project/internal/api/rest.pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
 				"operationId": "GET_/ping",
 				"parameters": [
 					{

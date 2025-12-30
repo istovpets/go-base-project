@@ -1,6 +1,6 @@
 package main
 
-import "base-project/cmd/app"
+import "base-project/internal/app"
 
 func main() {
 	a := app.New()

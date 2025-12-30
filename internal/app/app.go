@@ -1,9 +1,9 @@
 package app
 
 import (
-	"base-project/internal/api/rest"
 	"base-project/internal/config"
-	"base-project/internal/controller/repository/postgres"
+	"base-project/internal/delivery/rest"
+	"base-project/internal/infrastructure/repository/postgres"
 	"base-project/internal/pkg/logger"
 	"fmt"
 	"log/slog"
