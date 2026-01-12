@@ -7,6 +7,7 @@ import (
 	"base-project/internal/infrastructure/repository/postgres"
 	"base-project/internal/infrastructure/repository/postgres/queries"
 	"base-project/internal/usecase"
+	"context"
 	"fmt"
 	"log/slog"
 	"os"
@@ -20,6 +21,21 @@ type App struct {
 	repository repository.Repository
 	usecase    *usecase.Usecase
 	rest       *rest.Rest
+}
+
+func New() *App {
+	a := &App{}
+	initLog(&a.Config().LogLevel)
+
+	return a
+}
+
+func initLog(level slog.Leveler) {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout,
+		&slog.HandlerOptions{
+			Level: level,
+		}))
+	slog.SetDefault(logger)
 }
 
 // Getters
@@ -67,29 +83,32 @@ func (a *App) Rest() *rest.Rest {
 
 // Start/Stop
 
-func (a *App) Stop() {
-	slog.Debug("application stopped")
+func (a *App) Stop() error {
+	return a.Rest().Stop()
 }
 
-func (a *App) Run() {
-	slog.Debug("application started")
-	a.Rest().Run()
+func (a *App) Start(cancel context.CancelCauseFunc) error {
+	a.Rest().Start(cancel)
+
+	return nil
+
 }
 
-func New() *App {
-	a := &App{}
-	initLog(&a.Config().LogLevel)
-
-	return a
+func (a *App) CheckHealth(ctx context.Context) error {
+	return a.Rest().Ping(ctx)
 }
 
-func initLog(level slog.Leveler) {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout,
-		&slog.HandlerOptions{
-			Level: level,
-		}))
-	slog.SetDefault(logger)
+func (a *App) Wait(ctx context.Context) error {
+	<-ctx.Done()
+
+	if err := context.Cause(ctx); err != nil && err != context.Canceled {
+		return err
+	}
+
+	return nil
 }
+
+// Errors
 
 type ErrorPanic struct {
 	Err error
