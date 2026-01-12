@@ -3,16 +3,22 @@ package app
 import (
 	"base-project/internal/config"
 	"base-project/internal/delivery/rest"
+	"base-project/internal/infrastructure/repository"
 	"base-project/internal/infrastructure/repository/postgres"
-	"base-project/internal/pkg/logger"
+	"base-project/internal/infrastructure/repository/postgres/queries"
+	"base-project/internal/usecase"
 	"fmt"
 	"log/slog"
+	"os"
+
+	"github.com/istovpets/pgxhelper/sqlsetpgxhelper"
+	"github.com/istovpets/sqlset"
 )
 
 type App struct {
 	config     *config.Config
-	log        *slog.Logger
-	repository *postgres.Database
+	repository repository.Repository
+	usecase    *usecase.Usecase
 	rest       *rest.Rest
 }
 
@@ -30,29 +36,30 @@ func (a *App) Config() *config.Config {
 	return a.config
 }
 
-func (a *App) Log() *slog.Logger {
-	if a.log == nil {
-		var err error
-		a.log, err = logger.New(a.Config().LogLevel.Level())
-		if err != nil {
-			panicError(fmt.Errorf("failed to initialize logger: %w", err))
-		}
-	}
-
-	return a.log
-}
-
-func (a *App) Repository() *postgres.Database {
+func (a *App) Repository() repository.Repository {
 	if a.repository == nil {
-		a.repository = postgres.New(a.Log())
+		sqlSet, err := sqlset.New(queries.QueriesFS)
+		if err != nil {
+			panicError(fmt.Errorf("failed to load queries: %v", err))
+		}
+
+		a.repository = postgres.New(sqlsetpgxhelper.New(sqlSet))
 	}
 
 	return a.repository
 }
 
+func (a *App) Usecase() *usecase.Usecase {
+	if a.usecase == nil {
+		a.usecase = usecase.New(a.Repository())
+	}
+
+	return a.usecase
+}
+
 func (a *App) Rest() *rest.Rest {
 	if a.rest == nil {
-		a.rest = rest.New()
+		a.rest = rest.New(a.Usecase())
 	}
 
 	return a.rest
@@ -61,16 +68,27 @@ func (a *App) Rest() *rest.Rest {
 // Start/Stop
 
 func (a *App) Stop() {
-	a.Log().Debug("application stopped")
+	slog.Debug("application stopped")
 }
 
 func (a *App) Run() {
-	a.Log().Debug("application started")
+	slog.Debug("application started")
 	a.Rest().Run()
 }
 
 func New() *App {
-	return &App{}
+	a := &App{}
+	initLog(&a.Config().LogLevel)
+
+	return a
+}
+
+func initLog(level slog.Leveler) {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout,
+		&slog.HandlerOptions{
+			Level: level,
+		}))
+	slog.SetDefault(logger)
 }
 
 type ErrorPanic struct {
@@ -88,11 +106,7 @@ func panicError(err error) {
 func (a *App) Recover() {
 	if r := recover(); r != nil {
 		if err, ok := r.(ErrorPanic); ok {
-			if a.log == nil {
-				fmt.Printf("ERROR: Failed to initialize application. err: %v\n", err)
-			} else {
-				a.log.Error("failed to initialize application", slog.String("err", err.Error()))
-			}
+			slog.Error("failed to initialize application", slog.String("err", err.Error()))
 
 			return
 		}

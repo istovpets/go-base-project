@@ -1,18 +1,13 @@
 package postgres
 
-import (
-	"log/slog"
-
-	"github.com/jackc/pgx/v5/pgxpool"
-)
+import "github.com/istovpets/pgxhelper/sqlsetpgxhelper"
 
 type Database struct {
-	log  *slog.Logger
-	pool *pgxpool.Pool
+	*sqlsetpgxhelper.DBHelper
 }
 
-func New(log *slog.Logger) *Database {
+func New(db *sqlsetpgxhelper.DBHelper) *Database {
 	return &Database{
-		log: log,
+		DBHelper: db,
 	}
 }

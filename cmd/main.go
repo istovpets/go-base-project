@@ -1,13 +1,15 @@
 package main
 
-import "base-project/internal/app"
+import (
+	"base-project/internal/app"
+	"log/slog"
+)
 
 func main() {
 	a := app.New()
 	defer a.Recover()
 
-	log := a.Log()
-	log.Debug("starting application...")
+	slog.Debug("starting application...")
 
 	a.Run()
 	a.Stop()

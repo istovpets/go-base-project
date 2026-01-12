@@ -1,15 +1,20 @@
 package rest
 
 import (
+	"base-project/internal/usecase"
+
 	"github.com/go-fuego/fuego"
 )
 
 type Rest struct {
-	srv *fuego.Server
+	srv     *fuego.Server
+	usecase *usecase.Usecase
 }
 
-func New() *Rest {
-	r := &Rest{}
+func New(usecase *usecase.Usecase) *Rest {
+	r := &Rest{
+		usecase: usecase,
+	}
 	r.srv = fuego.NewServer(
 		fuego.WithEngineOptions(
 			fuego.WithOpenAPIConfig(
@@ -41,12 +46,6 @@ func (r *Rest) Run() {
 	r.srv.Run()
 }
 
-// Endpoint /ping
-// @Summary      Ping the server
-// @Description  Simple health-check endpoint
-// @Tags         health
-// @Success      200  {object}  PingResponse
-// @Router       /ping [get]
 func pingHandler(c fuego.ContextNoBody) (PingResponse, error) {
 	return PingResponse{Message: "pong"}, nil
 }
