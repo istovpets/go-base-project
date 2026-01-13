@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -14,13 +15,15 @@ import (
 
 type Rest struct {
 	srv     *fuego.Server
+	port    int16
 	stopCh  chan struct{}
 	usecase *usecase.Usecase
 	once    sync.Once
 }
 
-func New(usecase *usecase.Usecase) *Rest {
+func New(port int16, usecase *usecase.Usecase) *Rest {
 	r := &Rest{
+		port:    port,
 		stopCh:  make(chan struct{}),
 		usecase: usecase,
 	}
@@ -35,10 +38,34 @@ func New(usecase *usecase.Usecase) *Rest {
 		),
 	)
 
+	fuego.Use(r.srv, recoverMiddleware())
+
 	// Register handlers
 	r.addHandlers()
 
 	return r
+}
+
+// recover middleware
+func recoverMiddleware() func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if rec := recover(); rec != nil {
+					slog.Error("panic recovered in handler",
+						"panic", rec,
+						"stack", string(debug.Stack()),
+						"method", r.Method,
+						"path", r.URL.Path,
+					)
+
+					http.Error(w, "Internal Server Error (panic recovered)", http.StatusInternalServerError)
+				}
+			}()
+
+			next.ServeHTTP(w, r)
+		})
+	}
 }
 
 // Start/Stop
@@ -81,13 +108,7 @@ func (r *Rest) Stop() error {
 
 }
 
-func pingHandler(c fuego.ContextNoBody) (PingResponse, error) {
-	return PingResponse{Message: "pong"}, nil
-}
-
-type PingResponse struct {
-	Message string `json:"message" example:"pong"`
-}
+// Ping
 
 func (r *Rest) Ping(ctx context.Context) error {
 	const (
@@ -110,7 +131,7 @@ func (r *Rest) Ping(ctx context.Context) error {
 
 		resp, err := client.Do(req)
 		if err == nil {
-			resp.Body.Close()
+			resp.Body.Close() //nolint:errcheck
 
 			if resp.StatusCode == http.StatusOK {
 				return nil

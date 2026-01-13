@@ -79,7 +79,7 @@
 	"paths": {
 		"/ping": {
 			"get": {
-				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n\n---\n\n",
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nCheck connection to the server",
 				"operationId": "GET_/ping",
 				"parameters": [
 					{
@@ -140,7 +140,79 @@
 						"description": ""
 					}
 				},
-				"summary": "ping handler"
+				"summary": "Ping",
+				"tags": [
+					"generic"
+				]
+			}
+		},
+		"/test": {
+			"get": {
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.testHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nTest endpoint",
+				"operationId": "GET_/test",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/PingResponse"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/PingResponse"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Test",
+				"tags": [
+					"generic"
+				]
 			}
 		}
 	},
@@ -148,6 +220,11 @@
 		{
 			"description": "local server",
 			"url": "http://localhost:9999"
+		}
+	],
+	"tags": [
+		{
+			"name": "generic"
 		}
 	]
 }

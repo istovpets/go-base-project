@@ -1,0 +1,12 @@
+# Tests generated files
+/coverage*
+/junit.report.xml
+
+# Binaries
+/bin/*
+
+# Workspaces
+go.work
+go.work.sum
+
+/.vscode/
