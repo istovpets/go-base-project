@@ -4,6 +4,11 @@ MIGRATIONS_DIR=./migrations/postgres/main
 DB_CONN_STR=postgres://postgres:postgres@localhost:5432/dadata_v2?sslmode=disable
 DB_DRIVER=postgres
 
+ifneq (,$(wildcard .env))
+	include .env
+	export
+endif
+
 # lint
 
 ./bin/golangci-lint:
