@@ -69,6 +69,10 @@ func recoverMiddleware() func(next http.Handler) http.Handler {
 	}
 }
 
+func (r *Rest) Mux() http.Handler {
+	return r.srv.Mux
+}
+
 // Start/Stop
 
 func (r *Rest) Start(cancel context.CancelCauseFunc) {

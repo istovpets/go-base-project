@@ -7,16 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// type GetUsersResponse struct {
-// 	Message string `json:"message" example:"pong"`
-// }
-
 func (r *Rest) getUsers(c fuego.ContextNoBody) ([]domain.User, error) {
 	return r.usecase.GetUsers(c.Context())
-}
-
-type GetUserParams struct {
-	ID uuid.UUID `path:"id"`
 }
 
 func (r *Rest) getUser(c fuego.ContextNoBody) (*domain.User, error) {
@@ -27,10 +19,6 @@ func (r *Rest) getUser(c fuego.ContextNoBody) (*domain.User, error) {
 	}
 
 	return r.usecase.GetUser(c.Context(), id)
-}
-
-type CreateUserParams struct {
-	Name string `json:"name"`
 }
 
 func (r *Rest) createUser(c fuego.ContextWithBody[domain.UserData]) (*domain.User, error) {

@@ -24,6 +24,8 @@ This is a template project for creating web services in Go, based on the princip
 │   ├───infrastructure/     # Infrastructure layer (repositories, etc.)
 │   └───usecase/            # Use cases layer
 ├───migrations/             # Database migrations
+├───tests/                  # Tests
+│   └───integration/        # Integration tests
 ├───.env.example            # Example environment file
 ├───go.mod                  # Go modules
 └───Makefile                # Makefile for task automation

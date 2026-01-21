@@ -20,6 +20,15 @@ lint:
 	$(MAKE) ./bin/golangci-lint
 	./bin/golangci-lint run ./...
 
+.PHONY: test
+test:
+	go vet ./...
+	go test -race ./...
+
+.PHONY: generate
+generate:
+	go generate ./...
+
 # goose
 
 .PHONY: migrate_new
@@ -32,13 +41,12 @@ migrate_up:
 
 # shugar
 
-.PHONY: validateall
+.PHONY: validate
 validate:
-	go vet ./...
 	$(MAKE) lint
-	go test -race ./...
+	$(MAKE) test
 
 .PHONY: all
 all:
-	go generate ./...
+	$(MAKE) generate
 	$(MAKE) validate
