@@ -65,6 +65,25 @@
 				},
 				"type": "object"
 			},
+			"User": {
+				"description": "User schema",
+				"properties": {
+					"id": {},
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
+			"UserData": {
+				"description": "UserData schema",
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"type": "object"
+			},
 			"unknown-interface": {
 				"description": "unknown-interface schema"
 			}
@@ -79,7 +98,7 @@
 	"paths": {
 		"/ping": {
 			"get": {
-				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nCheck connection to the server",
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).pingHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nCheck connection to the server",
 				"operationId": "GET_/ping",
 				"parameters": [
 					{
@@ -146,10 +165,10 @@
 				]
 			}
 		},
-		"/test": {
+		"/user": {
 			"get": {
-				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.testHandler`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nTest endpoint",
-				"operationId": "GET_/test",
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).getUsers`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nGet all users",
+				"operationId": "GET_/user",
 				"parameters": [
 					{
 						"in": "header",
@@ -164,12 +183,18 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/PingResponse"
+									"items": {
+										"$ref": "#/components/schemas/User"
+									},
+									"type": "array"
 								}
 							},
 							"application/xml": {
 								"schema": {
-									"$ref": "#/components/schemas/PingResponse"
+									"items": {
+										"$ref": "#/components/schemas/User"
+									},
+									"type": "array"
 								}
 							}
 						},
@@ -209,9 +234,343 @@
 						"description": ""
 					}
 				},
-				"summary": "Test",
+				"summary": "Get users",
 				"tags": [
-					"generic"
+					"user"
+				]
+			},
+			"post": {
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).createUser`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nCreate new user",
+				"operationId": "POST_/user",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UserData"
+							}
+						}
+					},
+					"description": "Request body for domain.UserData",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Create user",
+				"tags": [
+					"user"
+				]
+			}
+		},
+		"/user/{id}": {
+			"delete": {
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).deleteUser`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nDelete existing user",
+				"operationId": "DELETE_/user/:id",
+				"parameters": [
+					{
+						"description": "ID of the user",
+						"examples": {
+							"id": {
+								"value": "9046a593-8a27-4c4b-971a-22661274aa60"
+							}
+						},
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/unknown-interface"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Delete user",
+				"tags": [
+					"user"
+				]
+			},
+			"get": {
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).getUser`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nGet user by ID",
+				"operationId": "GET_/user/:id",
+				"parameters": [
+					{
+						"description": "ID of the user",
+						"examples": {
+							"id": {
+								"value": "9046a593-8a27-4c4b-971a-22661274aa60"
+							}
+						},
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Get user",
+				"tags": [
+					"user"
+				]
+			},
+			"put": {
+				"description": "#### Controller: \n\n`base-project/internal/delivery/rest.(*Rest).updateUser`\n\n#### Middlewares:\n\n- `github.com/go-fuego/fuego.defaultLogger.middleware`\n- `base-project/internal/delivery/rest.recoverMiddleware.func1`\n\n---\n\nUpdate existing user",
+				"operationId": "PUT_/user/:id",
+				"parameters": [
+					{
+						"description": "ID of the user",
+						"examples": {
+							"id": {
+								"value": "9046a593-8a27-4c4b-971a-22661274aa60"
+							}
+						},
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"in": "header",
+						"name": "Accept",
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"*/*": {
+							"schema": {
+								"$ref": "#/components/schemas/UserData"
+							}
+						}
+					},
+					"description": "Request body for domain.UserData",
+					"required": true
+				},
+				"responses": {
+					"200": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/User"
+								}
+							}
+						},
+						"description": "OK"
+					},
+					"400": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Bad Request _(validation or deserialization error)_"
+					},
+					"500": {
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							},
+							"application/xml": {
+								"schema": {
+									"$ref": "#/components/schemas/HTTPError"
+								}
+							}
+						},
+						"description": "Internal Server Error _(panics)_"
+					},
+					"default": {
+						"description": ""
+					}
+				},
+				"summary": "Update user",
+				"tags": [
+					"user"
 				]
 			}
 		}
@@ -225,6 +584,9 @@
 	"tags": [
 		{
 			"name": "generic"
+		},
+		{
+			"name": "user"
 		}
 	]
 }

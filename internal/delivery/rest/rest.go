@@ -35,6 +35,7 @@ func New(port int16, usecase *usecase.Usecase) *Rest {
 					PrettyFormatJSON: true,
 				},
 			),
+			fuego.WithErrorHandler(errorHandler),
 		),
 	)
 
