@@ -17,12 +17,12 @@ This is a template project for creating web services in Go, based on the princip
 /
 ├───cmd/                    # Application entry point
 ├───internal/               # Internal application logic
-│   ├───app/                # Application layer
+│   ├───app/                # Application
 │   ├───config/             # Configuration
 │   ├───delivery/           # Delivery layer (REST, gRPC, etc.)
 │   ├───domain/             # Domain entities and business logic
 │   ├───infrastructure/     # Infrastructure layer (repositories, etc.)
-│   └───usecase/            # Use cases
+│   └───usecase/            # Use cases layer
 ├───migrations/             # Database migrations
 ├───.env.example            # Example environment file
 ├───go.mod                  # Go modules
