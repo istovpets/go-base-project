@@ -14,9 +14,6 @@ import (
 )
 
 func TestUserEndpoints(t *testing.T) {
-	srv, cleanup := setupTestServer(t)
-	defer cleanup()
-
 	var createdUser domain.User
 
 	// --- Test Create User ---
