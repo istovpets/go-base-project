@@ -61,14 +61,14 @@ This is a template project for creating web services in Go, based on the princip
 ### Running
 
 1.  **Start the database:**
-    To run PostgreSQL in Docker, execute the command. This will create a `base-project-db` container with the `dadata_v2` database, which will be available on port `5432`.
+    To run PostgreSQL in Docker, execute the command. This will create a `base-project-db` container with the `base_project` database, which will be available on port `5432`.
     ```sh
-    docker run --name base-project-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=dadata_v2 -p 5432:5432 -d postgres
+    docker run --name base-project-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=base_project -p 5432:5432 -d postgres
     ```
 
 2.  **Apply migrations:**
     ```sh
-    make migrate_up
+    make migrate-up
     ```
 
 3.  **Run the application:**
@@ -80,8 +80,16 @@ The application will be available at `http://localhost:8080` (or the port specif
 
 ## Makefile Commands
 
-- `make all`: Runs code generation, validation (`go vet`, `lint`), and tests (`go test`).
-- `make validate`: Runs `go vet`, `lint`, and `go test`.
-- `make lint`: Runs static code analysis using `golangci-lint`.
-- `make migrate_up`: Applies database migrations.
-- `make migrate_new`: Creates a new migration file named "new".
+- `make all`: Generates, lints and tests.
+- `make lint`: Lints the code.
+- `make test`: Runs tests.
+- `make generate`: Generates code.
+- `make migrate-new`: Creates a new migration.
+- `make migrate-up`: Applies migrations.
+- `make db-up`: Starts the database container.
+- `make db-wait`: Waits for the database to be ready.
+- `make db-start`: Starts the database and applies migrations.
+- `make db-down`: Stops and removes the database container.
+- `make db-clean`: Stops and removes the database container and removes data.
+- `make dep-up`: Starts the dependencies (database).
+- `make validate`: Lints and tests.
