@@ -11,3 +11,4 @@ go.work.sum
 
 /.vscode/
 .env
+.pg_data
