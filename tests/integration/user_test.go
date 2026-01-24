@@ -7,14 +7,20 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+const testTimeout = 10 * time.Second
+
 func TestUserEndpoints(t *testing.T) {
 	var createdUser domain.User
+	client := &http.Client{
+		Timeout: testTimeout,
+	}
 
 	// --- Test Create User ---
 	t.Run("CreateUser", func(t *testing.T) {
@@ -23,7 +29,7 @@ func TestUserEndpoints(t *testing.T) {
 		}
 		body, _ := json.Marshal(userData)
 
-		resp, err := http.Post(srv.URL+"/user", "application/json", bytes.NewBuffer(body))
+		resp, err := client.Post(srv.URL+"/user", "application/json", bytes.NewBuffer(body))
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 
@@ -40,7 +46,7 @@ func TestUserEndpoints(t *testing.T) {
 	t.Run("GetUser", func(t *testing.T) {
 		require.NotEqual(t, uuid.Nil, createdUser.ID, "CreateUser test must run first and successfully")
 
-		resp, err := http.Get(srv.URL + "/user/" + createdUser.ID.String())
+		resp, err := client.Get(srv.URL + "/user/" + createdUser.ID.String())
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 
@@ -56,7 +62,7 @@ func TestUserEndpoints(t *testing.T) {
 
 	// --- Test Get Users ---
 	t.Run("GetUsers", func(t *testing.T) {
-		resp, err := http.Get(srv.URL + "/user")
+		resp, err := client.Get(srv.URL + "/user")
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 
@@ -82,7 +88,7 @@ func TestUserEndpoints(t *testing.T) {
 		require.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
 
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 
@@ -103,14 +109,14 @@ func TestUserEndpoints(t *testing.T) {
 		req, err := http.NewRequest(http.MethodDelete, srv.URL+"/user/"+createdUser.ID.String(), nil)
 		require.NoError(t, err)
 
-		resp, err := http.DefaultClient.Do(req)
+		resp, err := client.Do(req)
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 		// Verify user is deleted
-		resp, err = http.Get(srv.URL + "/user/" + createdUser.ID.String())
+		resp, err = client.Get(srv.URL + "/user/" + createdUser.ID.String())
 		require.NoError(t, err)
 		defer resp.Body.Close() // nolint:errcheck
 

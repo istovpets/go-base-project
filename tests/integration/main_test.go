@@ -27,10 +27,10 @@ import (
 
 // Test settings and timeouts.
 const (
-	testTimeout    = 30 * time.Second
+	runTimeout     = 30 * time.Second
+	startupTimeout = 10 * time.Second
 	connTimeout    = 5 * time.Second
 	serverPort     = 9999
-	startupTimeout = 10 * time.Second
 )
 
 // Postgres container settings.
@@ -53,7 +53,7 @@ func TestMain(m *testing.M) {
 
 // run orchestrates the setup and teardown of the test environment.
 func run(m *testing.M) int {
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), runTimeout)
 	defer cancel()
 
 	pg, err := initPostgresContainer(ctx)
