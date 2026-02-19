@@ -9,14 +9,22 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"sync"
 	"time"
 )
 
 type App struct {
 	config     *config.Config
-	repository repository.Repository
-	usecase    *usecase.Usecase
-	rest       *rest.Rest
+	configOnce sync.Once
+
+	repository     repository.Repository
+	repositoryOnce sync.Once
+
+	usecase     *usecase.Usecase
+	usecaseOnce sync.Once
+
+	rest     *rest.Rest
+	restOnce sync.Once
 }
 
 func New() *App {

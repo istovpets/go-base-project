@@ -110,7 +110,6 @@ func (r *Rest) Stop() error {
 	<-r.stopCh
 
 	return err
-
 }
 
 // Ping
